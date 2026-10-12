@@ -1,0 +1,34 @@
+{
+  "name": "@rrms/backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "latest",
+    "cors": "latest",
+    "helmet": "latest",
+    "dotenv": "latest",
+    "zod": "latest",
+    "pg": "latest",
+    "bcryptjs": "latest",
+    "jsonwebtoken": "latest",
+    "cookie-parser": "latest",
+    "express-rate-limit": "latest"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "tsx": "latest",
+    "@types/node": "latest",
+    "@types/express": "latest",
+    "@types/cors": "latest",
+    "@types/pg": "latest",
+    "@types/bcryptjs": "latest",
+    "@types/jsonwebtoken": "latest",
+    "@types/cookie-parser": "latest"
+  }
+}
