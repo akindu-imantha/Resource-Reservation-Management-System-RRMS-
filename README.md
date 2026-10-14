@@ -45,11 +45,11 @@ flowchart LR
 | --- | --- |
 | Frontend | Next.js 16, React, TypeScript, CSS Modules |
 | API | Node.js, Express, TypeScript |
-| Database | PostgreSQL or Supabase |
+| Database | Supabase-hosted PostgreSQL |
 | Auth | bcrypt password hashes and JWT in an HTTP-only cookie |
 | UI and validation | Zod, React Hook Form, TanStack Query, Lucide |
 
-The frontend currently uses the **Next.js Pages Router**. The assessment requests the App Router; that architecture difference remains.
+The frontend uses the Next.js Pages Router for public, team member, and admin pages.
 
 ## 🏗️ Architecture
 
@@ -58,10 +58,10 @@ flowchart LR
   M[Member] --> FE[Next.js frontend]
   A[Admin] --> FE
   FE -->|HTTP API and cookie| API[Express API]
-  API -->|SQL| DB[(PostgreSQL)]
+  API -->|SQL| DB[(Supabase PostgreSQL)]
 ```
 
-The API performs authentication and role checks before database access. SQL migrations define the schema.
+Supabase provides the managed PostgreSQL database. Authentication and role authorization are handled by the Express API; the app does not use Supabase Auth. SQL migrations define the schema.
 
 ## 📂 Project layout
 
@@ -81,7 +81,7 @@ docs/rrms-erd.drawio         ER diagram
 
 ### Requirements
 - Node.js 20.9 or later
-- PostgreSQL or Supabase
+- Supabase project with PostgreSQL database access
 - npm
 
 ### Install and configure
@@ -91,7 +91,7 @@ From the repository root:
 npm install
 ```
 
-Copy `backend/.env.example` to `backend/.env`, and `frontend/.env.example` to `frontend/.env.local`. Set the database URL, a random `JWT_SECRET` of at least 32 characters, and the admin/member seed name, email, and password values in `backend/.env`. Use unique passwords of at least 12 characters. Never commit `backend/.env`.
+Copy `backend/.env.example` to `backend/.env`, and `frontend/.env.example` to `frontend/.env.local`. Set `DATABASE_URL` to the Supabase PostgreSQL Session Pooler connection string, `DATABASE_CA_CERT` to the downloaded Supabase root certificate path, a random `JWT_SECRET` of at least 32 characters, and the admin/member seed name, email, and password values in `backend/.env`. Use unique passwords of at least 12 characters. Never commit `backend/.env`.
 
 For Supabase, set `DATABASE_CA_CERT` to the downloaded root certificate path as shown in `backend/.env.example`.
 
@@ -132,9 +132,6 @@ See the [ER diagram](docs/rrms-erd.drawio). Core tables are users, admins, teams
 - `npm run db:migrate` — apply migrations
 - `npm run db:seed-admin` — seed admin and sample resources
 - `npm run db:seed-member` — seed demo member
-## 📹 Assessment submission
-
-The assessment also requires a short demo video and a shareable ER diagram link; prepare those when submitting.
 
 ---
 Built to make shared resource scheduling clear, reliable, and easy for teams.
