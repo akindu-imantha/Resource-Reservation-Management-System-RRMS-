@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import { hasAdminRecord } from "../../models/auth/auth.model.js";
-import { createSessionToken, createTeamMember, findActiveUserByEmail, sessionCookieName, sessionCookieOptions, toSessionUser, verifyPassword } from "../../services/auth/auth.service.js";
+import { createSessionToken, createTeamMember, findActiveUserByEmail, sessionCookieName, sessionCookieBaseOptions, sessionCookieOptions, toSessionUser, verifyPassword } from "../../services/auth/auth.service.js";
 import { loginSchema, registerSchema } from "../../schemas/auth/auth.schemas.js";
 
 function sendSession(response: Response, user: ReturnType<typeof toSessionUser>): void {
-  response.cookie(sessionCookieName, createSessionToken(user.id), sessionCookieOptions());
+  response.cookie(sessionCookieName, createSessionToken(user.id, user.role), sessionCookieOptions(user.role));
   response.json({ user });
 }
 
@@ -62,6 +62,6 @@ export function currentUser(request: Request, response: Response): void {
 }
 
 export function logout(_request: Request, response: Response): void {
-  response.clearCookie(sessionCookieName, sessionCookieOptions());
+  response.clearCookie(sessionCookieName, sessionCookieBaseOptions());
   response.status(204).end();
 }

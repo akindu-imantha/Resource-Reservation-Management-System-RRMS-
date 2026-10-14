@@ -46,7 +46,7 @@ flowchart LR
 | Frontend | Next.js 16, React, TypeScript, CSS Modules |
 | API | Node.js, Express, TypeScript |
 | Database | Supabase-hosted PostgreSQL |
-| Auth | bcrypt password hashes and JWT in an HTTP-only cookie |
+| Auth | bcrypt password hashes and JWT in an HTTP-only cookie; admin sessions expire after 10 minutes; member sessions after 8 hours |
 | UI and validation | Zod, React Hook Form, TanStack Query, Lucide |
 
 The frontend uses the Next.js Pages Router for public, team member, and admin pages.
