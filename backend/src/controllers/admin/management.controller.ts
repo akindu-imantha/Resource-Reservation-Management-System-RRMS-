@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 import * as model from "../../models/admin/management.model.js";
+import { sendReservationApprovalNotification } from "../../services/notifications/reservation-email.service.js";
 
 const resourceSchema = z.object({
   name: z.string().trim().min(2).max(160), description: z.string().trim().max(1000).nullable().optional(),
@@ -101,6 +102,14 @@ export async function getReservations(_req: Request, res: Response) {
 export async function editReservation(req: Request, res: Response) {
   const input = z.object({ status: z.enum(["approved", "rejected", "cancelled", "completed"]) }).safeParse(req.body);
   if (!idSchema.safeParse(req.params.id).success || !input.success) { res.status(400).json({ error: "Invalid reservation status." }); return; }
-  try { const reservation = await model.updateReservation(String(req.params.id), input.data.status); if (!reservation) { res.status(404).json({ error: "Reservation not found." }); return; } res.json({ reservation }); }
+  try {
+    const reservation = await model.updateReservation(String(req.params.id), input.data.status);
+    if (!reservation) { res.status(404).json({ error: "Reservation not found." }); return; }
+    if (reservation.status === "approved" && reservation.previousStatus === "pending") {
+      try { await sendReservationApprovalNotification(String(reservation.id)); }
+      catch (error) { console.error("Could not send reservation approval notifications:", error); }
+    }
+    res.json({ reservation: { id: reservation.id, status: reservation.status } });
+  }
   catch (error) { console.error("Reservation update failed:", error); res.status(500).json({ error: "Could not update reservation." }); }
 }

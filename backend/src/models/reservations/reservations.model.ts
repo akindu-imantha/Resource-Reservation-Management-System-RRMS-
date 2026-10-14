@@ -12,6 +12,15 @@ export async function listReservationsForUser(userId: string) {
   return result.rows;
 }
 
+export async function listRecentReservations(userId: string, since: string) {
+  const result = await db.query(`SELECT b.reservation_id AS id,r.name AS "resourceName",
+      b.start_time AS "startTime",b.end_time AS "endTime",b.created_at AS "createdAt"
+    FROM public.reservations b JOIN public.resources r ON r.resource_id=b.resource_id
+    WHERE b.user_id<>$1 AND b.created_at>$2 AND b.status IN ('pending','approved')
+    ORDER BY b.created_at ASC LIMIT 50`, [userId,since]);
+  return result.rows;
+}
+
 export async function createReservation(userId: string, input: { resourceId: number; teamId?: number | null; startTime: string; endTime: string; purpose: string }) {
   const client = await db.connect();
   let transaction = false;

@@ -95,6 +95,14 @@ Copy `backend/.env.example` to `backend/.env`, and `frontend/.env.example` to `f
 
 For Supabase, set `DATABASE_CA_CERT` to the downloaded root certificate path as shown in `backend/.env.example`.
 
+### Reservation approval emails
+
+Set `COMPANY_MAIL_ADDRESS` and `COMPANY_MAIL_APP_PASSWORD` in `backend/.env` to the mailbox used by the application. The current mail transport uses Gmail SMTP, so the address must be the authenticated Gmail or Google Workspace mailbox, and the password must be an app password for that account (with 2-Step Verification enabled). Do not use the account's normal password or put credentials in source control.
+
+The application sends one approval notification when an administrator changes a reservation from `pending` to `approved`. It goes to the active user accounts, including the requester; the configured sender mailbox also receives a copy. Creating, rejecting, or editing an already approved reservation does not send this notification.
+
+Email styling and wording cannot determine inbox placement. If Gmail displays “Why is this message in spam? This message is similar to messages that were identified as spam in the past,” its spam classifier has likely learned from previous recipient reports or sender reputation. For an expected and legitimate message, a recipient can use **Report not spam** and add the sender address to contacts. Avoid sending unsolicited mail. For a custom domain, configure SPF and DKIM with the mail provider and publish a DMARC policy; make sure the visible From address aligns with the authenticated sending domain. Gmail/Workspace administrators can check authentication and reputation in Google Postmaster Tools when available.
+
 ### Initialize the database
 
 ```sh

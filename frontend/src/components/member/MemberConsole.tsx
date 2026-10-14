@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { CalendarPlus, LogOut, Users, UserRound } from "lucide-react";
+import { Bell, CalendarPlus, LogOut, Users, UserRound } from "lucide-react";
 import SiteFooter from "../layout/SiteFooter";
 import MemberSidebar from "../layout/MemberSidebar";
 import WorkspaceSearch from "../layout/WorkspaceSearch";
@@ -10,6 +10,7 @@ import styles from "../../pages/admin/dashboard.module.css";
 type Section = "resources" | "reservations" | "teams" | "profile";
 type Resource = { id: string; name: string; description: string | null; category: string | null; location: string | null; capacity: number; type: string };
 type Reservation = { id: string; resourceName: string; teamName: string | null; startTime: string; endTime: string; purpose: string; status: string };
+type ReservationAlert = { id: string; resourceName: string; startTime: string; endTime: string; createdAt: string };
 type Team = { id: string; name: string; description: string | null; memberCount: number; isMember: boolean; membershipId?: string };
 type Account = { id: string; name: string; email: string; role: string; phone: string | null };
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
@@ -25,6 +26,9 @@ export default function MemberConsole({ section }: { section: Section }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [reservationAlerts, setReservationAlerts] = useState<ReservationAlert[]>([]);
+  const alertCursor = useRef(new Date().toISOString());
+  const seenAlertIds = useRef(new Set<string>());
   const [resourceId, setResourceId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [form, setForm] = useState<Record<string, string>>({});
@@ -68,6 +72,28 @@ export default function MemberConsole({ section }: { section: Section }) {
   }, [router, section]);
 
   useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    const checkForReservations = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/reservations/recent?since=${encodeURIComponent(alertCursor.current)}`, { credentials: "include" });
+        if (!response.ok) return;
+        const data = await response.json() as { reservations?: ReservationAlert[] };
+        if (!active) return;
+        for (const alert of data.reservations ?? []) {
+          if (!seenAlertIds.current.has(alert.id)) {
+            seenAlertIds.current.add(alert.id);
+            setReservationAlerts((current) => [...current, alert].slice(-4));
+          }
+          if (alert.createdAt > alertCursor.current) alertCursor.current = alert.createdAt;
+        }
+      } catch { /* Poll again on the next interval if the API is temporarily unavailable. */ }
+    };
+    void checkForReservations();
+    const timer = window.setInterval(() => void checkForReservations(), 15000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [user]);
   useEffect(() => {
     if (section === "reservations" && typeof router.query.resource === "string") setResourceId(router.query.resource);
   }, [router.query.resource, section]);
@@ -113,6 +139,11 @@ export default function MemberConsole({ section }: { section: Section }) {
     <main className={styles.main}>
       <div className={styles.headingRow}><div><span className={styles.eyebrow}><UserRound size={15} /> TEAM MEMBER WORKSPACE</span><h1>{headings[section]}</h1></div>{user && <button className={styles.signOut} type="button" onClick={signOut}><LogOut size={16} /> Sign out</button>}</div>
       {error && <p className={styles.error} role="alert">{error}</p>}{notice && <p className={styles.notice} role="status">{notice}</p>}
+      {reservationAlerts.length > 0 && <section aria-label="New reservation notifications" aria-live="polite" style={{ margin: "18px 0", padding: "14px 16px", border: "1px solid #dce8dd", borderRadius: 10, background: "#f3faf4" }}>
+        <strong style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: "#176b50" }}><Bell size={16} /> New reservations</strong>
+        {reservationAlerts.map((alert) => <p key={alert.id} style={{ margin: "8px 0 0", color: "#496257", fontSize: 12 }}>{alert.resourceName} has a reservation from {new Date(alert.startTime).toLocaleString()} to {new Date(alert.endTime).toLocaleString()}.</p>)}
+        <button type="button" className={styles.rowButton} style={{ marginTop: 10 }} onClick={() => setReservationAlerts([])}>Dismiss</button>
+      </section>}
       {loading ? <p className={styles.message}>Loading your workspace…</p> : <>
         {section !== "profile" && <WorkspaceSearch value={searchQuery} onChange={setSearchQuery} placeholder={section === "resources" ? "Search by resource, type, or location…" : section === "teams" ? "Search teams…" : "Search reservations…"} resultCount={section === "resources" ? filteredResources.length : section === "teams" ? filteredTeams.length : filteredReservations.length} totalCount={section === "resources" ? resources.length : section === "teams" ? teams.length : reservations.length} />}
         {section === "resources" && <div className={styles.resourceGrid}>{filteredResources.map((resource) => <article className={styles.resourceCard} key={resource.id}><span className={styles.resourceCategory}>{resource.category ?? resource.type}</span><h3>{resource.name}</h3><p>{resource.description ?? "Available for your team."}</p><small>{resource.location ?? "Location not set"} · Capacity {resource.capacity}</small><a className={styles.inlineAction} href={`/member/reservations?resource=${resource.id}`}><CalendarPlus size={14} /> Request a reservation</a></article>)}{filteredResources.length === 0 && <p className={styles.message}>{resources.length === 0 ? "No resources are available right now." : `No resources match “${searchQuery}”.`}</p>}</div>}

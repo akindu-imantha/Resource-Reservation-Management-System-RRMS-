@@ -95,6 +95,11 @@ export async function listReservations() {
   return result.rows;
 }
 export async function updateReservation(id: string, status: "approved" | "rejected" | "cancelled" | "completed") {
-  const result = await db.query("UPDATE public.reservations SET status=$1 WHERE reservation_id=$2 RETURNING reservation_id AS id,status", [status,id]);
+  const result = await db.query(`WITH current AS (
+      SELECT reservation_id,status AS "previousStatus" FROM public.reservations WHERE reservation_id=$2 FOR UPDATE
+    ), updated AS (
+      UPDATE public.reservations b SET status=$1 FROM current c WHERE b.reservation_id=c.reservation_id
+      RETURNING b.reservation_id AS id,b.status,c."previousStatus"
+    ) SELECT id,status,"previousStatus" FROM updated`, [status,id]);
   return result.rows[0] ?? null;
 }
