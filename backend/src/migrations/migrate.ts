@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { db } from "./pool.js";
+import { db } from "../database/pool.js";
 
 const migrationsDirectory = resolve(process.cwd(), "migrations");
 const migrationNamePattern = /^\d{14}_[a-z0-9_]+\.sql$/;

@@ -4,10 +4,13 @@ Next.js and TypeScript frontend with a separate TypeScript API backend.
 
 ## Project layout
 
-- `frontend/` — App Router pages, shared UI, and separate team member/admin features.
-- `backend/` — API grouped by auth, resources, and reservations; authorization is enforced by the API.
+- `frontend/src/pages/` — Next.js Pages Router routes for public, member, and admin pages.
+- `frontend/src/components/` — shared layout and workspace interfaces.
+- `backend/src/` — Express and TypeScript API grouped into routes, controllers, services, and database models; authorization is enforced by the API.
 - `docs/rrms-erd.drawio` — current ER diagram.
 - `docs/roles.md` — role responsibilities and access rules.
+
+The assessment specifies the Next.js App Router. The current frontend uses the Pages Router, so this is an outstanding architecture difference to address before submission.
 
 ## Setup
 
@@ -25,3 +28,15 @@ SQL migrations in `backend/migrations/` are the source of truth for database sch
 Run `npm run db:migrate` from the repository root, or `npm run db:migrate` from `backend/`. The runner applies pending migrations in filename order, records them in `public.backend_migrations`, and wraps each migration in a transaction. It refuses to run the initial schema if RRMS tables already exist without migration history, so inspect and reconcile an existing schema before proceeding.
 
 Create each new migration as `backend/migrations/YYYYMMDDHHMMSS_description.sql`, then run the same command. The runner uses the backend `DATABASE_URL` and `DATABASE_CA_CERT` settings.
+
+## Initial administrator
+
+Set `JWT_SECRET` in `backend/.env` to a random string with at least 32 characters. Set `ADMIN_SEED_NAME`, `ADMIN_SEED_EMAIL`, and `ADMIN_SEED_PASSWORD` there as well; use a unique password of at least 12 characters. Keep these values out of source control.
+
+After applying the schema migration, create the initial administrator in Supabase by running this once from the repository root:
+
+```powershell
+npm run db:seed-admin
+```
+
+The seed command hashes the password before inserting the account into `public.users`, then creates its related row in `public.admins`. It also inserts an example team, resource categories, and resources if they do not already exist. It can be run again safely: it will not reset an existing password or promote an existing non-admin account. Administrators and team members use the same sign-in page at `http://localhost:3000/login`; the account role opens the matching dashboard. The backend stores the session in an HTTP-only cookie.

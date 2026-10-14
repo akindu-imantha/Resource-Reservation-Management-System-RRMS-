@@ -1,0 +1,5 @@
+import MemberRouteRedirect from "../components/member/MemberRouteRedirect";
+
+export default function DashboardRedirect() {
+  return <MemberRouteRedirect to="/member/dashboard" />;
+}

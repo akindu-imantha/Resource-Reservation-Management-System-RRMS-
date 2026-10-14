@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "latest",
+    "@next/swc-wasm-nodejs": "16.4.0",
+    "next": "16.4.0",
     "react": "latest",
     "react-dom": "latest",
     "lucide-react": "latest",
@@ -20,7 +21,7 @@
     "date-fns": "latest"
   },
   "devDependencies": {
-    "typescript": "latest",
+    "typescript": "5.9.3",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest"

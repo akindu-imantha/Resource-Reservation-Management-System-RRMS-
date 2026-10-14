@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  color-scheme: light;
+  --rrms-ink: #18352f;
+  --rrms-muted: #63766e;
+  --rrms-primary: #176b50;
+  --rrms-primary-dark: #11563f;
+  --rrms-surface: #ffffff;
+  --rrms-page: #f7f8f5;
+  --rrms-border: #dce5dd;
+  --rrms-danger: #a83232;
+  --rrms-radius: 14px;
+  --rrms-shadow: 0 12px 36px rgb(28 57 45 / 8%);
+  --rrms-space-1: 4px;
+  --rrms-space-2: 8px;
+  --rrms-space-3: 12px;
+  --rrms-space-4: 16px;
+  --rrms-space-5: 24px;
+  --rrms-space-6: 32px;
+  --rrms-space-7: 48px;
+  --rrms-space-8: 64px;
+  --rrms-page-gutter: clamp(18px, 4vw, 48px);
+  --rrms-content-width: 1200px;
+  --rrms-control-height: 44px;
+  --rrms-card-padding: 24px;
+  font-family: "DM Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { min-width: 320px; scroll-behavior: smooth; background: var(--rrms-page); }
+body { min-width: 320px; min-height: 100vh; margin: 0; color: var(--rrms-ink); background: var(--rrms-page); }
+body, button, input, select, textarea { font: inherit; }
+button, input, select, textarea { color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .65; }
+a { color: inherit; }
+img, svg { max-width: 100%; }
+table { max-width: 100%; }
+:focus-visible { outline: 3px solid rgb(23 107 80 / 35%); outline-offset: 3px; }
+::selection { color: #fff; background: var(--rrms-primary); }
+
+@media (max-width: 640px) {
+  html { scroll-padding-top: 72px; }
+  input, select, textarea, button { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

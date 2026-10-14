@@ -2,23 +2,24 @@
 
 ## Team member
 
-- View resources and their availability.
-- Create reservations and view their own reservations.
-- Cancel their own reservations when the reservation policy allows it.
-- Use the calendar to find available time slots.
+- View active resources and their listed details.
+- Create reservations for available time slots and view their own reservations.
+- Cancel their own pending reservations.
+- View and manage their team memberships and profile.
 
-Frontend pages live under `frontend/src/app/(member)` and member-specific UI lives under `frontend/src/features/team-member`.
+Member routes live under `frontend/src/pages/member`; the shared member interface is in `frontend/src/components/member/MemberConsole.tsx`.
 
 ## Admin
 
-- Create, edit, deactivate, and view resources.
+- Create and edit resources and categories.
 - View and manage reservations across the organization.
-- Use the dashboard to review resource usage and reservation activity.
+- Manage teams and member access.
+- Review reservation activity on the dashboard.
 
-Admin pages live under `frontend/src/app/admin` and admin-specific UI lives under `frontend/src/features/admin`.
+Admin routes live under `frontend/src/pages/admin`; the shared admin interface is in `frontend/src/components/admin/AdminConsole.tsx`.
 
 ## API access
 
-The backend is organized by domain (`auth`, `resources`, and `reservations`) because both roles use some of the same operations. Role checks belong in backend authorization middleware and must be applied by the API; hiding a page or button in the frontend is not access control.
+The backend is organized by domain because both roles use some of the same operations. Role checks are applied by backend authorization middleware; hiding a page or button in the frontend is not access control.
 
-Suggested policy: team members may read active resources and manage only their own reservations; admins may manage resources and reservations for all users.
+Reservation creation checks that the resource is available, checks team membership when booking for a team, and rejects overlapping pending or approved reservations.

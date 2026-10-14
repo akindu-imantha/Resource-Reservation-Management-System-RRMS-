@@ -7,8 +7,10 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "db:check": "tsx src/db/check-connection.ts",
-    "db:migrate": "tsx src/db/migrate.ts"
+    "db:check": "tsx src/database/check-connection.ts",
+    "db:migrate": "tsx src/migrations/migrate.ts",
+    "db:seed-admin": "tsx src/seeders/seed-admin.ts",
+    "db:seed-member": "tsx src/seeders/seed-team-member.ts"
   },
   "dependencies": {
     "express": "latest",
@@ -23,7 +25,7 @@
     "express-rate-limit": "latest"
   },
   "devDependencies": {
-    "typescript": "latest",
+    "typescript": "5.9.3",
     "tsx": "latest",
     "@types/node": "latest",
     "@types/express": "latest",

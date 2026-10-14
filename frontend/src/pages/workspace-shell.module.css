@@ -1,0 +1,96 @@
+.workspaceBar {
+  min-height: 42px;
+  padding: 0 var(--rrms-page-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rrms-space-3);
+  border-bottom: 1px solid var(--rrms-border);
+  background: #fff;
+}
+
+.workspaceName {
+  color: var(--rrms-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.homeLink {
+  min-height: 30px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--rrms-border);
+  border-radius: 7px;
+  color: var(--rrms-ink);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+
+.homeLink:hover {
+  border-color: #a8cbb2;
+  background: #f3f8f3;
+  color: var(--rrms-primary);
+}
+
+.loadingStatus {
+  position: fixed;
+  z-index: 2000;
+  inset: 0 0 auto;
+  pointer-events: none;
+}
+
+.loadingTrack {
+  height: 3px;
+  display: block;
+  overflow: hidden;
+  background: #dcebe0;
+}
+
+.loadingProgress {
+  width: 38%;
+  height: 100%;
+  display: block;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, #176b50, #61b584);
+  animation: progress-sweep 1.15s ease-in-out infinite;
+}
+
+.loadingMessage {
+  position: absolute;
+  top: 11px;
+  right: 16px;
+  padding: 8px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #dce8dd;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgb(28 57 45 / 10%);
+  color: #315344;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.loadingMessage svg {
+  animation: spin .8s linear infinite;
+}
+
+@keyframes progress-sweep {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(290%); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingProgress, .loadingMessage svg { animation-duration: 2.5s; }
+}
